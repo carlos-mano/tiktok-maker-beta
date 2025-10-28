@@ -144,6 +144,24 @@
             background: #6c757d;
             margin-top: 10px;
         }
+
+        .video-result {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .video-result h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .loading {
+            color: #667eea;
+            font-size: 1.2rem;
+        }
     </style>
 </head>
 <body>
@@ -188,10 +206,13 @@
             <button class="btn" onclick="processVideo()">👉 Criar TikTok Automático</button>
             
             <div id="processMessage" class="hidden"></div>
+            <div id="videoResult" class="hidden"></div>
         </div>
     </div>
 
     <script>
+        const API_BASE = window.location.origin + '/api';
+
         // Usuários autorizados para o beta
         const authorizedUsers = [
             'amigo1@gmail.com',
@@ -199,7 +220,7 @@
             'amigo3@gmail.com'
         ];
 
-        function login() {
+        async function login() {
             const email = document.getElementById('email').value.toLowerCase().trim();
             const messageDiv = document.getElementById('loginMessage');
             
@@ -209,11 +230,97 @@
             }
 
             if (authorizedUsers.includes(email)) {
-                localStorage.setItem('userEmail', email);
-                showDashboard();
-                showMessage(messageDiv, '✅ Acesso liberado! Bem-vindo ao beta.', 'success');
+                try {
+                    const response = await fetch(API_BASE + '/check-auth', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ email: email })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.authorized) {
+                        localStorage.setItem('userEmail', email);
+                        showDashboard();
+                        showMessage(messageDiv, '✅ Acesso liberado! Bem-vindo ao beta.', 'success');
+                    } else {
+                        showMessage(messageDiv, '❌ Acesso não autorizado.', 'error');
+                    }
+                } catch (error) {
+                    showMessage(messageDiv, '❌ Erro de conexão com o servidor.', 'error');
+                }
             } else {
                 showMessage(messageDiv, '❌ Email não autorizado. Beta fechado para convidados.', 'error');
+            }
+        }
+
+        async function processVideo() {
+            const url = document.getElementById('videoUrl').value.trim();
+            const observations = document.getElementById('observations').value.trim();
+            const userEmail = localStorage.getItem('userEmail');
+            const messageDiv = document.getElementById('processMessage');
+            const resultDiv = document.getElementById('videoResult');
+            const btn = document.querySelector('#dashboard .btn');
+
+            if (!url) {
+                showMessage(messageDiv, 'Por favor, insira uma URL do YouTube.', 'error');
+                return;
+            }
+
+            if (!userEmail) {
+                showMessage(messageDiv, 'Sessão expirada. Faça login novamente.', 'error');
+                return;
+            }
+
+            // Limpar resultados anteriores
+            resultDiv.innerHTML = '';
+            resultDiv.classList.add('hidden');
+
+            // Processamento real
+            btn.disabled = true;
+            btn.textContent = '⏳ Processando...';
+            
+            showMessage(messageDiv, '🎬 Conectando com servidor...', 'success');
+
+            try {
+                const response = await fetch(API_BASE + '/process-video', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: userEmail,
+                        video_url: url,
+                        observations: observations
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage(messageDiv, `✅ ${data.mensagem}`, 'success');
+                    
+                    // Mostrar resultado do vídeo
+                    resultDiv.innerHTML = `
+                        <div class="video-result">
+                            <h3>🎉 Processamento Concluído!</h3>
+                            <p><strong>Status:</strong> ${data.status}</p>
+                            <p><strong>ID do Vídeo:</strong> ${data.video_id}</p>
+                            <p><strong>Tempo de processamento:</strong> ${data.tempo_processamento}s</p>
+                            <p><em>Em breve: download do vídeo real!</em></p>
+                        </div>
+                    `;
+                    resultDiv.classList.remove('hidden');
+                } else {
+                    showMessage(messageDiv, `❌ Erro: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showMessage(messageDiv, '❌ Erro de conexão com o servidor.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '👉 Criar TikTok Automático';
             }
         }
 
@@ -228,41 +335,13 @@
             document.getElementById('dashboard').classList.add('hidden');
             document.getElementById('loginScreen').classList.remove('hidden');
             document.getElementById('email').value = '';
-        }
-
-        function processVideo() {
-            const url = document.getElementById('videoUrl').value.trim();
-            const observations = document.getElementById('observations').value.trim();
-            const messageDiv = document.getElementById('processMessage');
-            const btn = document.querySelector('#dashboard .btn');
-
-            if (!url) {
-                showMessage(messageDiv, 'Por favor, insira uma URL do YouTube.', 'error');
-                return;
-            }
-
-            // Simula processamento
-            btn.disabled = true;
-            btn.textContent = '⏳ Processando...';
-            
-            showMessage(messageDiv, '🎬 Seu vídeo está sendo processado! Isso pode levar alguns minutos...', 'success');
-
-            // Aqui você integraria com a API do backend
-            setTimeout(() => {
-                btn.disabled = false;
-                btn.textContent = '👉 Criar TikTok Automático';
-                showMessage(messageDiv, '✅ Processamento concluído! Em uma versão real, o vídeo apareceria aqui para download.', 'success');
-            }, 3000);
+            document.getElementById('videoResult').classList.add('hidden');
         }
 
         function showMessage(element, message, type) {
             element.textContent = message;
             element.className = type + '-message';
             element.classList.remove('hidden');
-            
-            setTimeout(() => {
-                element.classList.add('hidden');
-            }, 5000);
         }
 
         // Verifica se usuário já está logado
