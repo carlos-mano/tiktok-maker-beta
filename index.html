@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎬 TikTok Maker - Beta</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .beta-tag {
+            background: #ff6b6b;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .user-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .logout-btn {
+            background: #6c757d;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Tela de Login -->
+        <div id="loginScreen">
+            <div class="logo">🎬</div>
+            <h1>TikTok Maker</h1>
+            <div class="beta-tag">BETA FECHADO</div>
+            <p class="subtitle">Acesso restrito para convidados</p>
+            
+            <div class="form-group">
+                <label for="email">Email autorizado:</label>
+                <input type="email" id="email" placeholder="seu@email.com" required>
+            </div>
+            
+            <button class="btn" onclick="login()">Entrar no Beta</button>
+            
+            <div id="loginMessage" class="hidden"></div>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="dashboard" class="hidden">
+            <div class="logo">🚀</div>
+            <h1>Pronto para criar!</h1>
+            
+            <div class="user-info">
+                <strong>Usuário:</strong> <span id="userEmail"></span>
+                <button class="btn logout-btn" onclick="logout()">Sair</button>
+            </div>
+
+            <div class="form-group">
+                <label for="videoUrl">URL do YouTube:</label>
+                <input type="url" id="videoUrl" placeholder="https://youtube.com/watch?v=..." required>
+            </div>
+
+            <div class="form-group">
+                <label for="observations">Observações (opcional):</label>
+                <textarea id="observations" placeholder="Alguma parte específica que quer destacar?"></textarea>
+            </div>
+
+            <button class="btn" onclick="processVideo()">👉 Criar TikTok Automático</button>
+            
+            <div id="processMessage" class="hidden"></div>
+        </div>
+    </div>
+
+    <script>
+        // Usuários autorizados para o beta
+        const authorizedUsers = [
+            'amigo1@gmail.com',
+            'amigo2@gmail.com', 
+            'amigo3@gmail.com'
+        ];
+
+        function login() {
+            const email = document.getElementById('email').value.toLowerCase().trim();
+            const messageDiv = document.getElementById('loginMessage');
+            
+            if (!email) {
+                showMessage(messageDiv, 'Por favor, insira um email.', 'error');
+                return;
+            }
+
+            if (authorizedUsers.includes(email)) {
+                localStorage.setItem('userEmail', email);
+                showDashboard();
+                showMessage(messageDiv, '✅ Acesso liberado! Bem-vindo ao beta.', 'success');
+            } else {
+                showMessage(messageDiv, '❌ Email não autorizado. Beta fechado para convidados.', 'error');
+            }
+        }
+
+        function showDashboard() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('userEmail').textContent = localStorage.getItem('userEmail');
+        }
+
+        function logout() {
+            localStorage.removeItem('userEmail');
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('email').value = '';
+        }
+
+        function processVideo() {
+            const url = document.getElementById('videoUrl').value.trim();
+            const observations = document.getElementById('observations').value.trim();
+            const messageDiv = document.getElementById('processMessage');
+            const btn = document.querySelector('#dashboard .btn');
+
+            if (!url) {
+                showMessage(messageDiv, 'Por favor, insira uma URL do YouTube.', 'error');
+                return;
+            }
+
+            // Simula processamento
+            btn.disabled = true;
+            btn.textContent = '⏳ Processando...';
+            
+            showMessage(messageDiv, '🎬 Seu vídeo está sendo processado! Isso pode levar alguns minutos...', 'success');
+
+            // Aqui você integraria com a API do backend
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.textContent = '👉 Criar TikTok Automático';
+                showMessage(messageDiv, '✅ Processamento concluído! Em uma versão real, o vídeo apareceria aqui para download.', 'success');
+            }, 3000);
+        }
+
+        function showMessage(element, message, type) {
+            element.textContent = message;
+            element.className = type + '-message';
+            element.classList.remove('hidden');
+            
+            setTimeout(() => {
+                element.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Verifica se usuário já está logado
+        window.onload = function() {
+            const userEmail = localStorage.getItem('userEmail');
+            if (userEmail && authorizedUsers.includes(userEmail)) {
+                showDashboard();
+            }
+        }
+    </script>
+</body>
+</html>
