@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎬 TikTok Maker - Beta</title>
+    <title>🎬 TikTok Maker - Cadastro</title>
     <style>
         * {
             margin: 0;
@@ -70,7 +70,7 @@
             font-weight: 600;
         }
 
-        input, textarea {
+        input, select {
             width: 100%;
             padding: 15px;
             border: 2px solid #e1e5e9;
@@ -79,14 +79,9 @@
             transition: border-color 0.3s;
         }
 
-        input:focus, textarea:focus {
+        input:focus, select:focus {
             outline: none;
             border-color: #667eea;
-        }
-
-        textarea {
-            height: 100px;
-            resize: vertical;
         }
 
         .btn {
@@ -100,6 +95,7 @@
             cursor: pointer;
             width: 100%;
             transition: transform 0.2s;
+            margin-top: 10px;
         }
 
         .btn:hover {
@@ -110,6 +106,11 @@
             background: #ccc;
             cursor: not-allowed;
             transform: none;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            margin-top: 10px;
         }
 
         .hidden {
@@ -132,210 +133,375 @@
             margin-top: 20px;
         }
 
-        .user-info {
-            background: #f8f9fa;
+        .info-message {
+            background: #d1ecf1;
+            color: #0c5460;
             padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        .logout-btn {
-            background: #6c757d;
-            margin-top: 10px;
-        }
-
-        .video-result {
-            background: #e7f3ff;
-            padding: 20px;
             border-radius: 10px;
             margin-top: 20px;
             text-align: left;
         }
 
-        .video-result h3 {
-            color: #333;
-            margin-bottom: 10px;
+        .login-link {
+            margin-top: 20px;
+            color: #666;
         }
 
-        .loading {
+        .login-link a {
             color: #667eea;
-            font-size: 1.2rem;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .password-strength {
+            height: 4px;
+            background: #e1e5e9;
+            border-radius: 2px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .strength-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s, background 0.3s;
+        }
+
+        .terms {
+            font-size: 0.9rem;
+            color: #666;
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .terms a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .terms a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Tela de Login -->
-        <div id="loginScreen">
+        <!-- Tela de Boas-Vindas -->
+        <div id="welcomeScreen">
             <div class="logo">🎬</div>
             <h1>TikTok Maker</h1>
             <div class="beta-tag">BETA FECHADO</div>
-            <p class="subtitle">Acesso restrito para convidados</p>
+            <p class="subtitle">Solicite acesso à nossa plataforma</p>
+            
+            <div class="info-message">
+                <strong>📋 Como funciona:</strong><br>
+                1. Preencha o formulário de cadastro<br>
+                2. Aguarde a aprovação manual<br>
+                3. Receba acesso por email<br>
+                4. Comece a criar TikToks automáticos!
+            </div>
+
+            <button class="btn" onclick="showRegisterForm()">
+                📝 Solicitar Acesso
+            </button>
+
+            <div class="login-link">
+                Já tem acesso? <a href="#" onclick="showLoginForm()">Fazer login</a>
+            </div>
+        </div>
+
+        <!-- Formulário de Cadastro -->
+        <div id="registerForm" class="hidden">
+            <div class="logo">📝</div>
+            <h1>Solicitar Acesso</h1>
+            <p class="subtitle">Preencha seus dados para solicitar acesso ao beta</p>
             
             <div class="form-group">
-                <label for="email">Email autorizado:</label>
-                <input type="email" id="email" placeholder="seu@email.com" required>
+                <label for="fullName">Nome Completo:</label>
+                <input type="text" id="fullName" placeholder="Seu nome completo" required>
             </div>
+
+            <div class="form-group">
+                <label for="registerEmail">Email:</label>
+                <input type="email" id="registerEmail" placeholder="seu@email.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Senha:</label>
+                <input type="password" id="password" placeholder="Mínimo 6 caracteres" required minlength="6">
+                <div class="password-strength">
+                    <div class="strength-fill" id="passwordStrength"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirmar Senha:</label>
+                <input type="password" id="confirmPassword" placeholder="Digite novamente sua senha" required>
+            </div>
+
+            <div class="form-group">
+                <label for="userType">Como você pretende usar a plataforma?</label>
+                <select id="userType" required>
+                    <option value="">Selecione uma opção</option>
+                    <option value="content_creator">Criador de Conteúdo</option>
+                    <option value="social_media">Gestor de Mídias Sociais</option>
+                    <option value="marketing">Profissional de Marketing</option>
+                    <option value="personal">Uso Pessoal</option>
+                    <option value="other">Outro</option>
+                </select>
+            </div>
+
+            <div class="terms">
+                <input type="checkbox" id="acceptTerms" required>
+                <label for="acceptTerms">
+                    Concordo com os <a href="#" onclick="showTerms()">Termos de Uso</a> e 
+                    <a href="#" onclick="showPrivacy()">Política de Privacidade</a>
+                </label>
+            </div>
+
+            <button class="btn" onclick="registerUser()">
+                📨 Enviar Solicitação
+            </button>
+
+            <button class="btn btn-secondary" onclick="showWelcomeScreen()">
+                ↩️ Voltar
+            </button>
+
+            <div id="registerMessage" class="hidden"></div>
+        </div>
+
+        <!-- Tela de Login -->
+        <div id="loginForm" class="hidden">
+            <div class="logo">🔐</div>
+            <h1>Fazer Login</h1>
+            <p class="subtitle">Acesse sua conta do TikTok Maker</p>
             
-            <button class="btn" onclick="login()">Entrar no Beta</button>
-            
+            <div class="form-group">
+                <label for="loginEmail">Email:</label>
+                <input type="email" id="loginEmail" placeholder="seu@email.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="loginPassword">Senha:</label>
+                <input type="password" id="loginPassword" placeholder="Sua senha" required>
+            </div>
+
+            <button class="btn" onclick="loginUser()">
+                🚀 Entrar
+            </button>
+
+            <button class="btn btn-secondary" onclick="showWelcomeScreen()">
+                ↩️ Voltar
+            </button>
+
+            <div class="login-link">
+                Não tem conta? <a href="#" onclick="showRegisterForm()">Solicitar acesso</a>
+            </div>
+
             <div id="loginMessage" class="hidden"></div>
         </div>
 
-        <!-- Dashboard -->
-        <div id="dashboard" class="hidden">
-            <div class="logo">🚀</div>
-            <h1>Pronto para criar!</h1>
+        <!-- Tela de Sucesso no Cadastro -->
+        <div id="successScreen" class="hidden">
+            <div class="logo">✅</div>
+            <h1>Solicitação Enviada!</h1>
             
-            <div class="user-info">
-                <strong>Usuário:</strong> <span id="userEmail"></span>
-                <button class="btn logout-btn" onclick="logout()">Sair</button>
+            <div class="success-message">
+                <strong>📨 Solicitação recebida com sucesso!</strong><br><br>
+                Sua solicitação de acesso ao TikTok Maker Beta foi enviada para análise.<br><br>
+                <strong>Próximos passos:</strong><br>
+                1. Nossa equipe analisará seu cadastro<br>
+                2. Você receberá um email com o resultado<br>
+                3. Após aprovação, faça login e comece a usar!<br><br>
+                <em>Tempo médio de análise: 24-48 horas</em>
             </div>
 
-            <div class="form-group">
-                <label for="videoUrl">URL do YouTube:</label>
-                <input type="url" id="videoUrl" placeholder="https://youtube.com/watch?v=..." required>
-            </div>
-
-            <div class="form-group">
-                <label for="observations">Observações (opcional):</label>
-                <textarea id="observations" placeholder="Alguma parte específica que quer destacar?"></textarea>
-            </div>
-
-            <button class="btn" onclick="processVideo()">👉 Criar TikTok Automático</button>
-            
-            <div id="processMessage" class="hidden"></div>
-            <div id="videoResult" class="hidden"></div>
+            <button class="btn" onclick="showWelcomeScreen()">
+                🏠 Voltar ao Início
+            </button>
         </div>
     </div>
 
     <script>
         const API_BASE = window.location.origin + '/api';
 
-        // Usuários autorizados para o beta
-        const authorizedUsers = [
-            'amigo1@gmail.com',
-            'amigo2@gmail.com', 
-            'amigo3@gmail.com'
-        ];
-
-        async function login() {
-            const email = document.getElementById('email').value.toLowerCase().trim();
-            const messageDiv = document.getElementById('loginMessage');
-            
-            if (!email) {
-                showMessage(messageDiv, 'Por favor, insira um email.', 'error');
-                return;
-            }
-
-            if (authorizedUsers.includes(email)) {
-                try {
-                    const response = await fetch(API_BASE + '/check-auth', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ email: email })
-                    });
-
-                    const data = await response.json();
-
-                    if (data.authorized) {
-                        localStorage.setItem('userEmail', email);
-                        showDashboard();
-                        showMessage(messageDiv, '✅ Acesso liberado! Bem-vindo ao beta.', 'success');
-                    } else {
-                        showMessage(messageDiv, '❌ Acesso não autorizado.', 'error');
-                    }
-                } catch (error) {
-                    showMessage(messageDiv, '❌ Erro de conexão com o servidor.', 'error');
-                }
-            } else {
-                showMessage(messageDiv, '❌ Email não autorizado. Beta fechado para convidados.', 'error');
-            }
+        // Navegação entre telas
+        function showWelcomeScreen() {
+            hideAllScreens();
+            document.getElementById('welcomeScreen').classList.remove('hidden');
         }
 
-        async function processVideo() {
-            const url = document.getElementById('videoUrl').value.trim();
-            const observations = document.getElementById('observations').value.trim();
-            const userEmail = localStorage.getItem('userEmail');
-            const messageDiv = document.getElementById('processMessage');
-            const resultDiv = document.getElementById('videoResult');
-            const btn = document.querySelector('#dashboard .btn');
+        function showRegisterForm() {
+            hideAllScreens();
+            document.getElementById('registerForm').classList.remove('hidden');
+        }
 
-            if (!url) {
-                showMessage(messageDiv, 'Por favor, insira uma URL do YouTube.', 'error');
-                return;
-            }
+        function showLoginForm() {
+            hideAllScreens();
+            document.getElementById('loginForm').classList.remove('hidden');
+        }
 
-            if (!userEmail) {
-                showMessage(messageDiv, 'Sessão expirada. Faça login novamente.', 'error');
-                return;
-            }
+        function showSuccessScreen() {
+            hideAllScreens();
+            document.getElementById('successScreen').classList.remove('hidden');
+        }
 
-            // Limpar resultados anteriores
-            resultDiv.innerHTML = '';
-            resultDiv.classList.add('hidden');
+        function hideAllScreens() {
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('successScreen').classList.add('hidden');
+        }
 
-            // Processamento real
-            btn.disabled = true;
-            btn.textContent = '⏳ Processando...';
+        // Validação de senha em tempo real
+        document.getElementById('password').addEventListener('input', function(e) {
+            const password = e.target.value;
+            const strengthFill = document.getElementById('passwordStrength');
+            let strength = 0;
             
-            showMessage(messageDiv, '🎬 Conectando com servidor...', 'success');
+            if (password.length >= 6) strength += 25;
+            if (password.length >= 8) strength += 25;
+            if (/[A-Z]/.test(password)) strength += 25;
+            if (/[0-9]/.test(password)) strength += 25;
+            
+            strengthFill.style.width = strength + '%';
+            
+            if (strength < 50) {
+                strengthFill.style.background = '#ff6b6b';
+            } else if (strength < 75) {
+                strengthFill.style.background = '#ffa726';
+            } else {
+                strengthFill.style.background = '#4caf50';
+            }
+        });
+
+        // Cadastro de usuário
+        async function registerUser() {
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('registerEmail').value.toLowerCase().trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const userType = document.getElementById('userType').value;
+            const acceptTerms = document.getElementById('acceptTerms').checked;
+            
+            const messageDiv = document.getElementById('registerMessage');
+            const btn = document.querySelector('#registerForm .btn');
+
+            // Validações
+            if (!fullName || !email || !password || !confirmPassword || !userType) {
+                showMessage(messageDiv, 'Por favor, preencha todos os campos.', 'error');
+                return;
+            }
+
+            if (!acceptTerms) {
+                showMessage(messageDiv, 'Você deve aceitar os termos de uso.', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showMessage(messageDiv, 'A senha deve ter no mínimo 6 caracteres.', 'error');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showMessage(messageDiv, 'As senhas não coincidem.', 'error');
+                return;
+            }
+
+            if (!validateEmail(email)) {
+                showMessage(messageDiv, 'Por favor, insira um email válido.', 'error');
+                return;
+            }
+
+            // Simula cadastro (substituir por API real depois)
+            btn.disabled = true;
+            btn.textContent = '⏳ Enviando solicitação...';
+            
+            showMessage(messageDiv, 'Enviando sua solicitação...', 'info');
 
             try {
-                const response = await fetch(API_BASE + '/process-video', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        email: userEmail,
-                        video_url: url,
-                        observations: observations
-                    })
-                });
+                // TODO: Substituir por chamada API real
+                // const response = await fetch(API_BASE + '/register', {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify({
+                //         name: fullName,
+                //         email: email,
+                //         password: password,
+                //         user_type: userType
+                //     })
+                // });
 
-                const data = await response.json();
-
-                if (response.ok) {
-                    showMessage(messageDiv, `✅ ${data.mensagem}`, 'success');
+                // Simulação de sucesso
+                setTimeout(() => {
+                    showSuccessScreen();
                     
-                    // Mostrar resultado do vídeo
-                    resultDiv.innerHTML = `
-                        <div class="video-result">
-                            <h3>🎉 Processamento Concluído!</h3>
-                            <p><strong>Status:</strong> ${data.status}</p>
-                            <p><strong>ID do Vídeo:</strong> ${data.video_id}</p>
-                            <p><strong>Tempo de processamento:</strong> ${data.tempo_processamento}s</p>
-                            <p><em>Em breve: download do vídeo real!</em></p>
-                        </div>
-                    `;
-                    resultDiv.classList.remove('hidden');
-                } else {
-                    showMessage(messageDiv, `❌ Erro: ${data.error}`, 'error');
-                }
+                    // Em produção, enviar email de confirmação
+                    console.log('Novo cadastro:', {
+                        name: fullName,
+                        email: email,
+                        type: userType,
+                        timestamp: new Date().toISOString()
+                    });
+                    
+                }, 2000);
+
             } catch (error) {
-                showMessage(messageDiv, '❌ Erro de conexão com o servidor.', 'error');
-            } finally {
+                showMessage(messageDiv, 'Erro de conexão. Tente novamente.', 'error');
                 btn.disabled = false;
-                btn.textContent = '👉 Criar TikTok Automático';
+                btn.textContent = '📨 Enviar Solicitação';
             }
         }
 
-        function showDashboard() {
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('dashboard').classList.remove('hidden');
-            document.getElementById('userEmail').textContent = localStorage.getItem('userEmail');
+        // Login de usuário
+        async function loginUser() {
+            const email = document.getElementById('loginEmail').value.toLowerCase().trim();
+            const password = document.getElementById('loginPassword').value;
+            const messageDiv = document.getElementById('loginMessage');
+            const btn = document.querySelector('#loginForm .btn');
+
+            if (!email || !password) {
+                showMessage(messageDiv, 'Por favor, preencha todos os campos.', 'error');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = '⏳ Entrando...';
+
+            try {
+                // TODO: Substituir por API real
+                // Por enquanto, simula login bem-sucedido para emails autorizados
+                const authorizedUsers = ['amigo1@gmail.com', 'amigo2@gmail.com', 'amigo3@gmail.com'];
+                
+                if (authorizedUsers.includes(email) && password.length >= 6) {
+                    localStorage.setItem('userEmail', email);
+                    showMessage(messageDiv, '✅ Login realizado com sucesso!', 'success');
+                    
+                    // Redireciona para dashboard (simulado)
+                    setTimeout(() => {
+                        alert('Em breve: Dashboard do TikTok Maker!');
+                        showWelcomeScreen();
+                    }, 1500);
+                } else {
+                    showMessage(messageDiv, '❌ Email ou senha incorretos.', 'error');
+                }
+
+            } catch (error) {
+                showMessage(messageDiv, '❌ Erro de conexão.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🚀 Entrar';
+            }
         }
 
-        function logout() {
-            localStorage.removeItem('userEmail');
-            document.getElementById('dashboard').classList.add('hidden');
-            document.getElementById('loginScreen').classList.remove('hidden');
-            document.getElementById('email').value = '';
-            document.getElementById('videoResult').classList.add('hidden');
+        // Funções auxiliares
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
         }
 
         function showMessage(element, message, type) {
@@ -344,11 +510,20 @@
             element.classList.remove('hidden');
         }
 
+        function showTerms() {
+            alert('Termos de Uso:\n\n1. Uso autorizado apenas para conteúdo original\n2. Respeito aos direitos autorais\n3. Limite de 5 vídeos por dia no plano gratuito');
+        }
+
+        function showPrivacy() {
+            alert('Política de Privacidade:\n\n1. Seus dados estão seguros conosco\n2. Não compartilhamos suas informações\n3. Você pode solicitar exclusão a qualquer momento');
+        }
+
         // Verifica se usuário já está logado
         window.onload = function() {
             const userEmail = localStorage.getItem('userEmail');
-            if (userEmail && authorizedUsers.includes(userEmail)) {
-                showDashboard();
+            if (userEmail) {
+                // Usuário logado - mostrar dashboard (simulado)
+                showWelcomeScreen();
             }
         }
     </script>
