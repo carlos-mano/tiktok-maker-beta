@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎬 TikTok Maker - Cadastro</title>
+    <title>🎬 TikTok Maker - Crie TikToks Automáticos</title>
     <style>
         * {
             margin: 0;
@@ -48,14 +48,28 @@
             font-size: 1.1rem;
         }
 
-        .beta-tag {
-            background: #ff6b6b;
+        .credits-badge {
+            background: linear-gradient(135deg, #4caf50, #45a049);
             color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 1rem;
             display: inline-block;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .credits-zero {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+        }
+
+        .timer {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-size: 0.9rem;
+            color: #666;
         }
 
         .form-group {
@@ -70,7 +84,7 @@
             font-weight: 600;
         }
 
-        input, select {
+        input, select, textarea {
             width: 100%;
             padding: 15px;
             border: 2px solid #e1e5e9;
@@ -79,9 +93,14 @@
             transition: border-color 0.3s;
         }
 
-        input:focus, select:focus {
+        input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: #667eea;
+        }
+
+        textarea {
+            height: 100px;
+            resize: vertical;
         }
 
         .btn {
@@ -110,7 +129,6 @@
 
         .btn-secondary {
             background: #6c757d;
-            margin-top: 10px;
         }
 
         .hidden {
@@ -186,6 +204,22 @@
         .terms a:hover {
             text-decoration: underline;
         }
+
+        .video-result {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .user-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
     </style>
 </head>
 <body>
@@ -194,31 +228,30 @@
         <div id="welcomeScreen">
             <div class="logo">🎬</div>
             <h1>TikTok Maker</h1>
-            <div class="beta-tag">BETA FECHADO</div>
-            <p class="subtitle">Solicite acesso à nossa plataforma</p>
+            <p class="subtitle">Crie TikToks automáticos a partir de vídeos do YouTube</p>
             
             <div class="info-message">
-                <strong>📋 Como funciona:</strong><br>
-                1. Preencha o formulário de cadastro<br>
-                2. Aguarde a aprovação manual<br>
-                3. Receba acesso por email<br>
-                4. Comece a criar TikToks automáticos!
+                <strong>🎯 1 Vídeo Gratuito por Dia!</strong><br>
+                • Cadastre-se e comece a usar agora<br>
+                • 1 crédito = 1 TikTok automático<br>
+                • Novo crédito a cada 24 horas<br>
+                • Não acumulativo - usa ou perde!
             </div>
 
             <button class="btn" onclick="showRegisterForm()">
-                📝 Solicitar Acesso
+                🚀 Começar Agora - É Grátis!
             </button>
 
             <div class="login-link">
-                Já tem acesso? <a href="#" onclick="showLoginForm()">Fazer login</a>
+                Já tem conta? <a href="#" onclick="showLoginForm()">Fazer login</a>
             </div>
         </div>
 
         <!-- Formulário de Cadastro -->
         <div id="registerForm" class="hidden">
             <div class="logo">📝</div>
-            <h1>Solicitar Acesso</h1>
-            <p class="subtitle">Preencha seus dados para solicitar acesso ao beta</p>
+            <h1>Criar Conta Gratuita</h1>
+            <p class="subtitle">Acesso imediato - 1 vídeo grátis por dia!</p>
             
             <div class="form-group">
                 <label for="fullName">Nome Completo:</label>
@@ -243,18 +276,6 @@
                 <input type="password" id="confirmPassword" placeholder="Digite novamente sua senha" required>
             </div>
 
-            <div class="form-group">
-                <label for="userType">Como você pretende usar a plataforma?</label>
-                <select id="userType" required>
-                    <option value="">Selecione uma opção</option>
-                    <option value="content_creator">Criador de Conteúdo</option>
-                    <option value="social_media">Gestor de Mídias Sociais</option>
-                    <option value="marketing">Profissional de Marketing</option>
-                    <option value="personal">Uso Pessoal</option>
-                    <option value="other">Outro</option>
-                </select>
-            </div>
-
             <div class="terms">
                 <input type="checkbox" id="acceptTerms" required>
                 <label for="acceptTerms">
@@ -264,7 +285,7 @@
             </div>
 
             <button class="btn" onclick="registerUser()">
-                📨 Enviar Solicitação
+                🎉 Criar Minha Conta
             </button>
 
             <button class="btn btn-secondary" onclick="showWelcomeScreen()">
@@ -291,7 +312,7 @@
             </div>
 
             <button class="btn" onclick="loginUser()">
-                🚀 Entrar
+                🚀 Entrar na Minha Conta
             </button>
 
             <button class="btn btn-secondary" onclick="showWelcomeScreen()">
@@ -299,35 +320,70 @@
             </button>
 
             <div class="login-link">
-                Não tem conta? <a href="#" onclick="showRegisterForm()">Solicitar acesso</a>
+                Não tem conta? <a href="#" onclick="showRegisterForm()">Criar conta grátis</a>
             </div>
 
             <div id="loginMessage" class="hidden"></div>
         </div>
 
-        <!-- Tela de Sucesso no Cadastro -->
-        <div id="successScreen" class="hidden">
-            <div class="logo">✅</div>
-            <h1>Solicitação Enviada!</h1>
+        <!-- Dashboard Principal -->
+        <div id="dashboard" class="hidden">
+            <div class="logo">🎬</div>
+            <h1>Pronto para Criar!</h1>
             
-            <div class="success-message">
-                <strong>📨 Solicitação recebida com sucesso!</strong><br><br>
-                Sua solicitação de acesso ao TikTok Maker Beta foi enviada para análise.<br><br>
-                <strong>Próximos passos:</strong><br>
-                1. Nossa equipe analisará seu cadastro<br>
-                2. Você receberá um email com o resultado<br>
-                3. Após aprovação, faça login e comece a usar!<br><br>
-                <em>Tempo médio de análise: 24-48 horas</em>
+            <!-- Informações do Usuário e Créditos -->
+            <div class="user-info">
+                <strong>👤 Usuário:</strong> <span id="userEmail"></span>
+                <button class="btn btn-secondary" onclick="logout()" style="margin-top: 10px; padding: 8px 15px;">
+                    🚪 Sair
+                </button>
             </div>
 
-            <button class="btn" onclick="showWelcomeScreen()">
-                🏠 Voltar ao Início
+            <!-- Sistema de Créditos -->
+            <div id="creditsDisplay">
+                <div class="credits-badge" id="creditsBadge">
+                    🎁 <span id="creditsCount">1</span> Vídeo Gratuito Hoje
+                </div>
+                <div class="timer" id="nextCreditTimer">
+                    ⏰ Próximo crédito em: <span id="timerDisplay">24:00:00</span>
+                </div>
+            </div>
+
+            <div id="noCreditsMessage" class="info-message hidden">
+                <strong>⏳ Créditos Esgotados por Hoje!</strong><br>
+                Volte amanhã para processar mais 1 vídeo grátis.<br>
+                <em>Próximo crédito em: <span id="nextCreditTime"></span></em>
+            </div>
+
+            <!-- Formulário de Processamento -->
+            <div class="form-group">
+                <label for="videoUrl">📹 URL do YouTube:</label>
+                <input type="url" id="videoUrl" placeholder="https://youtube.com/watch?v=..." required>
+            </div>
+
+            <div class="form-group">
+                <label for="observations">📝 Observações (opcional):</label>
+                <textarea id="observations" placeholder="Alguma parte específica que quer destacar?"></textarea>
+            </div>
+
+            <button class="btn" onclick="processVideo()" id="processButton">
+                🎬 Criar TikTok Automático
             </button>
+
+            <div id="processMessage" class="hidden"></div>
+            <div id="videoResult" class="hidden"></div>
         </div>
     </div>
 
     <script>
         const API_BASE = window.location.origin + '/api';
+
+        // Sistema de Créditos
+        let userCredits = {
+            credits: 1,
+            lastReset: new Date().toISOString(),
+            nextReset: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+        };
 
         // Navegação entre telas
         function showWelcomeScreen() {
@@ -345,16 +401,72 @@
             document.getElementById('loginForm').classList.remove('hidden');
         }
 
-        function showSuccessScreen() {
+        function showDashboard() {
             hideAllScreens();
-            document.getElementById('successScreen').classList.remove('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            updateCreditsDisplay();
+            startTimer();
         }
 
         function hideAllScreens() {
             document.getElementById('welcomeScreen').classList.add('hidden');
             document.getElementById('registerForm').classList.add('hidden');
             document.getElementById('loginForm').classList.add('hidden');
-            document.getElementById('successScreen').classList.add('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
+        }
+
+        // Sistema de Timer para próximo crédito
+        function startTimer() {
+            updateTimerDisplay();
+            setInterval(updateTimerDisplay, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const now = new Date();
+            const nextReset = new Date(userCredits.nextReset);
+            const diff = nextReset - now;
+
+            if (diff <= 0) {
+                // Reset dos créditos
+                userCredits.credits = 1;
+                userCredits.lastReset = new Date().toISOString();
+                userCredits.nextReset = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+                updateCreditsDisplay();
+            }
+
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById('timerDisplay').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            document.getElementById('nextCreditTime').textContent = 
+                `${hours}h ${minutes}m ${seconds}s`;
+        }
+
+        // Atualiza display de créditos
+        function updateCreditsDisplay() {
+            const creditsBadge = document.getElementById('creditsBadge');
+            const creditsCount = document.getElementById('creditsCount');
+            const noCreditsMessage = document.getElementById('noCreditsMessage');
+            const processButton = document.getElementById('processButton');
+
+            creditsCount.textContent = userCredits.credits;
+
+            if (userCredits.credits > 0) {
+                creditsBadge.className = 'credits-badge';
+                creditsBadge.innerHTML = `🎁 <span id="creditsCount">${userCredits.credits}</span> Vídeo Gratuito Hoje`;
+                noCreditsMessage.classList.add('hidden');
+                processButton.disabled = false;
+                processButton.textContent = '🎬 Criar TikTok Automático';
+            } else {
+                creditsBadge.className = 'credits-badge credits-zero';
+                creditsBadge.innerHTML = `⏳ <span id="creditsCount">0</span> Créditos Hoje`;
+                noCreditsMessage.classList.remove('hidden');
+                processButton.disabled = true;
+                processButton.textContent = '⏳ Aguarde Novo Crédito';
+            }
         }
 
         // Validação de senha em tempo real
@@ -385,14 +497,13 @@
             const email = document.getElementById('registerEmail').value.toLowerCase().trim();
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
-            const userType = document.getElementById('userType').value;
             const acceptTerms = document.getElementById('acceptTerms').checked;
             
             const messageDiv = document.getElementById('registerMessage');
             const btn = document.querySelector('#registerForm .btn');
 
             // Validações
-            if (!fullName || !email || !password || !confirmPassword || !userType) {
+            if (!fullName || !email || !password || !confirmPassword) {
                 showMessage(messageDiv, 'Por favor, preencha todos os campos.', 'error');
                 return;
             }
@@ -417,43 +528,37 @@
                 return;
             }
 
-            // Simula cadastro (substituir por API real depois)
             btn.disabled = true;
-            btn.textContent = '⏳ Enviando solicitação...';
+            btn.textContent = '⏳ Criando conta...';
             
-            showMessage(messageDiv, 'Enviando sua solicitação...', 'info');
+            showMessage(messageDiv, 'Criando sua conta...', 'info');
 
             try {
-                // TODO: Substituir por chamada API real
-                // const response = await fetch(API_BASE + '/register', {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify({
-                //         name: fullName,
-                //         email: email,
-                //         password: password,
-                //         user_type: userType
-                //     })
-                // });
-
-                // Simulação de sucesso
+                // Simulação de cadastro bem-sucedido
                 setTimeout(() => {
-                    showSuccessScreen();
-                    
-                    // Em produção, enviar email de confirmação
-                    console.log('Novo cadastro:', {
-                        name: fullName,
+                    // Salva usuário no localStorage (simulação)
+                    const userData = {
                         email: email,
-                        type: userType,
-                        timestamp: new Date().toISOString()
-                    });
+                        name: fullName,
+                        credits: 1,
+                        lastReset: new Date().toISOString(),
+                        nextReset: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+                    };
                     
-                }, 2000);
+                    localStorage.setItem('userData', JSON.stringify(userData));
+                    localStorage.setItem('userEmail', email);
+                    
+                    userCredits = userData;
+                    showDashboard();
+                    
+                    showMessage(messageDiv, '✅ Conta criada com sucesso!', 'success');
+                    
+                }, 1500);
 
             } catch (error) {
-                showMessage(messageDiv, 'Erro de conexão. Tente novamente.', 'error');
+                showMessage(messageDiv, 'Erro ao criar conta. Tente novamente.', 'error');
                 btn.disabled = false;
-                btn.textContent = '📨 Enviar Solicitação';
+                btn.textContent = '🎉 Criar Minha Conta';
             }
         }
 
@@ -473,29 +578,134 @@
             btn.textContent = '⏳ Entrando...';
 
             try {
-                // TODO: Substituir por API real
-                // Por enquanto, simula login bem-sucedido para emails autorizados
-                const authorizedUsers = ['amigo1@gmail.com', 'amigo2@gmail.com', 'amigo3@gmail.com'];
-                
-                if (authorizedUsers.includes(email) && password.length >= 6) {
-                    localStorage.setItem('userEmail', email);
-                    showMessage(messageDiv, '✅ Login realizado com sucesso!', 'success');
+                // Simulação de login
+                setTimeout(() => {
+                    // Verifica se é um usuário "existente" (simulação)
+                    const savedUser = localStorage.getItem('userData');
                     
-                    // Redireciona para dashboard (simulado)
-                    setTimeout(() => {
-                        alert('Em breve: Dashboard do TikTok Maker!');
-                        showWelcomeScreen();
-                    }, 1500);
-                } else {
-                    showMessage(messageDiv, '❌ Email ou senha incorretos.', 'error');
-                }
+                    if (savedUser) {
+                        const userData = JSON.parse(savedUser);
+                        if (userData.email === email && password.length >= 6) {
+                            userCredits = userData;
+                            localStorage.setItem('userEmail', email);
+                            showDashboard();
+                            showMessage(messageDiv, '✅ Login realizado com sucesso!', 'success');
+                        } else {
+                            showMessage(messageDiv, '❌ Email ou senha incorretos.', 'error');
+                        }
+                    } else {
+                        // Novo usuário - cria automaticamente
+                        const newUser = {
+                            email: email,
+                            name: email.split('@')[0],
+                            credits: 1,
+                            lastReset: new Date().toISOString(),
+                            nextReset: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+                        };
+                        
+                        localStorage.setItem('userData', JSON.stringify(newUser));
+                        localStorage.setItem('userEmail', email);
+                        userCredits = newUser;
+                        showDashboard();
+                        showMessage(messageDiv, '✅ Nova conta criada automaticamente!', 'success');
+                    }
+                    
+                    btn.disabled = false;
+                    btn.textContent = '🚀 Entrar na Minha Conta';
+                    
+                }, 1000);
 
             } catch (error) {
                 showMessage(messageDiv, '❌ Erro de conexão.', 'error');
-            } finally {
                 btn.disabled = false;
-                btn.textContent = '🚀 Entrar';
+                btn.textContent = '🚀 Entrar na Minha Conta';
             }
+        }
+
+        // Processamento de vídeo
+        async function processVideo() {
+            const url = document.getElementById('videoUrl').value.trim();
+            const observations = document.getElementById('observations').value.trim();
+            const messageDiv = document.getElementById('processMessage');
+            const resultDiv = document.getElementById('videoResult');
+            const btn = document.getElementById('processButton');
+
+            if (!url) {
+                showMessage(messageDiv, 'Por favor, insira uma URL do YouTube.', 'error');
+                return;
+            }
+
+            if (userCredits.credits <= 0) {
+                showMessage(messageDiv, '⏳ Seus créditos diários acabaram. Volte amanhã!', 'error');
+                return;
+            }
+
+            // Limpar resultados anteriores
+            resultDiv.innerHTML = '';
+            resultDiv.classList.add('hidden');
+
+            // Usa 1 crédito
+            userCredits.credits -= 1;
+            updateCreditsDisplay();
+
+            // Processamento
+            btn.disabled = true;
+            btn.textContent = '⏳ Processando vídeo...';
+            
+            showMessage(messageDiv, '🎬 Processando seu TikTok... Isso pode levar alguns minutos.', 'info');
+
+            try {
+                // TODO: Substituir por API real
+                const response = await fetch(API_BASE + '/process-video', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: localStorage.getItem('userEmail'),
+                        video_url: url,
+                        observations: observations
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage(messageDiv, `✅ ${data.mensagem}`, 'success');
+                    
+                    // Mostrar resultado do vídeo
+                    resultDiv.innerHTML = `
+                        <div class="video-result">
+                            <h3>🎉 TikTok Criado com Sucesso!</h3>
+                            <p><strong>Status:</strong> ${data.status}</p>
+                            <p><strong>ID do Vídeo:</strong> ${data.video_id}</p>
+                            <p><strong>Créditos restantes hoje:</strong> ${userCredits.credits}</p>
+                            <p><em>Volte amanhã para mais 1 vídeo grátis!</em></p>
+                        </div>
+                    `;
+                    resultDiv.classList.remove('hidden');
+                } else {
+                    showMessage(messageDiv, `❌ Erro: ${data.error}`, 'error');
+                    // Devolve o crédito em caso de erro
+                    userCredits.credits += 1;
+                    updateCreditsDisplay();
+                }
+            } catch (error) {
+                showMessage(messageDiv, '❌ Erro de conexão com o servidor.', 'error');
+                // Devolve o crédito em caso de erro
+                userCredits.credits += 1;
+                updateCreditsDisplay();
+            } finally {
+                btn.disabled = userCredits.credits <= 0;
+                btn.textContent = userCredits.credits > 0 ? '🎬 Criar TikTok Automático' : '⏳ Aguarde Novo Crédito';
+            }
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('userEmail');
+            // Mantém os dados do usuário para próximo login
+            showWelcomeScreen();
         }
 
         // Funções auxiliares
@@ -511,19 +721,34 @@
         }
 
         function showTerms() {
-            alert('Termos de Uso:\n\n1. Uso autorizado apenas para conteúdo original\n2. Respeito aos direitos autorais\n3. Limite de 5 vídeos por dia no plano gratuito');
+            alert('📋 Termos de Uso:\n\n• 1 vídeo grátis por dia\n• Não acumulativo\n• Uso pessoal\n• Respeito aos direitos autorais\n• Podemos modificar as regras a qualquer momento');
         }
 
         function showPrivacy() {
-            alert('Política de Privacidade:\n\n1. Seus dados estão seguros conosco\n2. Não compartilhamos suas informações\n3. Você pode solicitar exclusão a qualquer momento');
+            alert('🔒 Política de Privacidade:\n\n• Seus dados estão seguros\n• Não compartilhamos informações\n• Usamos cookies para melhor experiência\n• Você pode excluir sua conta a qualquer momento');
         }
 
         // Verifica se usuário já está logado
         window.onload = function() {
             const userEmail = localStorage.getItem('userEmail');
-            if (userEmail) {
-                // Usuário logado - mostrar dashboard (simulado)
-                showWelcomeScreen();
+            const userData = localStorage.getItem('userData');
+            
+            if (userEmail && userData) {
+                userCredits = JSON.parse(userData);
+                
+                // Verifica se precisa resetar créditos
+                const now = new Date();
+                const lastReset = new Date(userCredits.lastReset);
+                
+                if (now.toDateString() !== lastReset.toDateString()) {
+                    userCredits.credits = 1;
+                    userCredits.lastReset = now.toISOString();
+                    userCredits.nextReset = new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString();
+                    localStorage.setItem('userData', JSON.stringify(userCredits));
+                }
+                
+                document.getElementById('userEmail').textContent = userEmail;
+                showDashboard();
             }
         }
     </script>
