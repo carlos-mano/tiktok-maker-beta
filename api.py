@@ -11,13 +11,6 @@ from datetime import datetime
 app = Flask(__name__)
 CORS(app)  # Permite frontend se conectar
 
-# Usuários autorizados para o beta
-AUTHORIZED_USERS = [
-    'amigo1@gmail.com',
-    'amigo2@gmail.com', 
-    'amigo3@gmail.com'
-]
-
 # ==================== PROCESSAMENTO REAL DE VÍDEO ====================
 def processar_video_real(url, email):
     """Processa vídeos do YouTube DE VERDADE - versão simplificada"""
@@ -136,16 +129,17 @@ def processar_video_real(url, email):
 def health_check():
     return jsonify({'status': 'online', 'message': 'API TikTok Maker funcionando!'})
 
-# Rota para verificar se usuário está autorizado
+# Rota para verificar se usuário está autorizado - AGORA ACEITA TODOS!
 @app.route('/api/check-auth', methods=['POST'])
 def check_auth():
     data = request.json
     email = data.get('email', '').lower().strip()
     
-    if email in AUTHORIZED_USERS:
+    # AGORA ACEITA QUALQUER EMAIL PARA TESTES!
+    if email and '@' in email:  # Qualquer email válido
         return jsonify({'authorized': True, 'message': 'Usuário autorizado'})
     else:
-        return jsonify({'authorized': False, 'message': 'Acesso não autorizado'}), 401
+        return jsonify({'authorized': False, 'message': 'Email inválido'}), 401
 
 # Rota principal para processar vídeos
 @app.route('/api/process-video', methods=['POST'])
@@ -156,9 +150,9 @@ def process_video():
         video_url = data.get('video_url', '').strip()
         observacoes = data.get('observations', '')
         
-        # Verifica se usuário está autorizado
-        if email not in AUTHORIZED_USERS:
-            return jsonify({'error': 'Acesso não autorizado'}), 401
+        # VERIFICAÇÃO SIMPLIFICADA - ACEITA QUALQUER EMAIL VÁLIDO
+        if not email or '@' not in email:
+            return jsonify({'error': 'Email inválido'}), 401
         
         # Valida URL do YouTube
         if not video_url or 'youtube.com' not in video_url and 'youtu.be' not in video_url:
@@ -178,8 +172,9 @@ def process_video():
 # Rota para listar vídeos processados (futuramente)
 @app.route('/api/videos/<email>', methods=['GET'])
 def listar_videos(email):
-    if email not in AUTHORIZED_USERS:
-        return jsonify({'error': 'Acesso não autorizado'}), 401
+    # Aceita qualquer email válido
+    if not email or '@' not in email:
+        return jsonify({'error': 'Email inválido'}), 401
     
     # Por enquanto retorna lista vazia (depois puxa do banco)
     return jsonify({'videos': [], 'message': 'Em breve: histórico de vídeos'})
