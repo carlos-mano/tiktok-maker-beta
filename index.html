@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎬 TikTok Maker - Beta</title>
+    <title>🎬 TikTok Maker - Crie TikToks Automáticos</title>
     <style>
         * {
             margin: 0;
@@ -48,14 +48,28 @@
             font-size: 1.1rem;
         }
 
-        .beta-tag {
-            background: #ff6b6b;
+        .credits-badge {
+            background: linear-gradient(135deg, #4caf50, #45a049);
             color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 1rem;
             display: inline-block;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .credits-zero {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+        }
+
+        .timer {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-size: 0.9rem;
+            color: #666;
         }
 
         .form-group {
@@ -70,7 +84,7 @@
             font-weight: 600;
         }
 
-        input, textarea {
+        input, select, textarea {
             width: 100%;
             padding: 15px;
             border: 2px solid #e1e5e9;
@@ -79,7 +93,7 @@
             transition: border-color 0.3s;
         }
 
-        input:focus, textarea:focus {
+        input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: #667eea;
         }
@@ -100,6 +114,7 @@
             cursor: pointer;
             width: 100%;
             transition: transform 0.2s;
+            margin-top: 10px;
         }
 
         .btn:hover {
@@ -110,6 +125,10 @@
             background: #ccc;
             cursor: not-allowed;
             transform: none;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
         }
 
         .hidden {
@@ -132,6 +151,68 @@
             margin-top: 20px;
         }
 
+        .info-message {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .login-link {
+            margin-top: 20px;
+            color: #666;
+        }
+
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .password-strength {
+            height: 4px;
+            background: #e1e5e9;
+            border-radius: 2px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .strength-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s, background 0.3s;
+        }
+
+        .terms {
+            font-size: 0.9rem;
+            color: #666;
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .terms a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .terms a:hover {
+            text-decoration: underline;
+        }
+
+        .video-result {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
         .user-info {
             background: #f8f9fa;
             padding: 15px;
@@ -139,188 +220,450 @@
             margin-bottom: 20px;
             text-align: left;
         }
-
-        .logout-btn {
-            background: #6c757d;
-            margin-top: 10px;
-        }
-
-        .progress-container {
-            background: #e9ecef;
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 20px;
-            background: #f0f0f0;
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            border-radius: 10px;
-            transition: width 0.3s ease;
-            width: 0%;
-        }
-
-        .progress-text {
-            font-size: 0.9rem;
-            color: #666;
-            margin: 5px 0;
-        }
-
-        .job-info {
-            background: #e7f3ff;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 15px;
-            text-align: left;
-        }
-
-        .loading {
-            color: #667eea;
-            font-size: 1.2rem;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Tela de Login -->
-        <div id="loginScreen">
+        <!-- Tela de Boas-Vindas -->
+        <div id="welcomeScreen">
             <div class="logo">🎬</div>
             <h1>TikTok Maker</h1>
-            <div class="beta-tag">BETA FECHADO</div>
-            <p class="subtitle">Acesso restrito para convidados</p>
+            <p class="subtitle">Crie TikToks automáticos a partir de vídeos do YouTube</p>
+            
+            <div class="info-message">
+                <strong>🎯 1 Vídeo Gratuito por Dia!</strong><br>
+                • Cadastre-se e comece a usar agora<br>
+                • 1 crédito = 1 TikTok automático<br>
+                • Novo crédito a cada 24 horas<br>
+                • Não acumulativo - usa ou perde!
+            </div>
+
+            <button class="btn" onclick="showRegisterForm()">
+                🚀 Começar Agora - É Grátis!
+            </button>
+
+            <div class="login-link">
+                Já tem conta? <a href="#" onclick="showLoginForm()">Fazer login</a>
+            </div>
+        </div>
+
+        <!-- Formulário de Cadastro -->
+        <div id="registerForm" class="hidden">
+            <div class="logo">📝</div>
+            <h1>Criar Conta Gratuita</h1>
+            <p class="subtitle">Acesso imediato - 1 vídeo grátis por dia!</p>
             
             <div class="form-group">
-                <label for="email">Email autorizado:</label>
-                <input type="email" id="email" placeholder="seu@email.com" required>
+                <label for="fullName">Nome Completo:</label>
+                <input type="text" id="fullName" placeholder="Seu nome completo" required>
             </div>
+
+            <div class="form-group">
+                <label for="registerEmail">Email:</label>
+                <input type="email" id="registerEmail" placeholder="seu@email.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Senha:</label>
+                <input type="password" id="password" placeholder="Mínimo 6 caracteres" required minlength="6">
+                <div class="password-strength">
+                    <div class="strength-fill" id="passwordStrength"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirmar Senha:</label>
+                <input type="password" id="confirmPassword" placeholder="Digite novamente sua senha" required>
+            </div>
+
+            <div class="terms">
+                <input type="checkbox" id="acceptTerms" required>
+                <label for="acceptTerms">
+                    Concordo com os <a href="#" onclick="showTerms()">Termos de Uso</a> e 
+                    <a href="#" onclick="showPrivacy()">Política de Privacidade</a>
+                </label>
+            </div>
+
+            <button class="btn" onclick="registerUser()">
+                🎉 Criar Minha Conta
+            </button>
+
+            <button class="btn btn-secondary" onclick="showWelcomeScreen()">
+                ↩️ Voltar
+            </button>
+
+            <div id="registerMessage" class="hidden"></div>
+        </div>
+
+        <!-- Tela de Login -->
+        <div id="loginForm" class="hidden">
+            <div class="logo">🔐</div>
+            <h1>Fazer Login</h1>
+            <p class="subtitle">Acesse sua conta do TikTok Maker</p>
             
-            <button class="btn" onclick="login()">Entrar no Beta</button>
-            
+            <div class="form-group">
+                <label for="loginEmail">Email:</label>
+                <input type="email" id="loginEmail" placeholder="seu@email.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="loginPassword">Senha:</label>
+                <input type="password" id="loginPassword" placeholder="Sua senha" required>
+            </div>
+
+            <button class="btn" onclick="loginUser()">
+                🚀 Entrar na Minha Conta
+            </button>
+
+            <button class="btn btn-secondary" onclick="showWelcomeScreen()">
+                ↩️ Voltar
+            </button>
+
+            <div class="login-link">
+                Não tem conta? <a href="#" onclick="showRegisterForm()">Criar conta grátis</a>
+            </div>
+
             <div id="loginMessage" class="hidden"></div>
         </div>
 
-        <!-- Dashboard -->
+        <!-- Dashboard Principal -->
         <div id="dashboard" class="hidden">
-            <div class="logo">🚀</div>
-            <h1>Pronto para criar!</h1>
+            <div class="logo">🎬</div>
+            <h1>Pronto para Criar!</h1>
             
+            <!-- Informações do Usuário e Créditos -->
             <div class="user-info">
-                <strong>Usuário:</strong> <span id="userEmail"></span>
-                <button class="btn logout-btn" onclick="logout()">Sair</button>
+                <strong>👤 Usuário:</strong> <span id="userEmail"></span>
+                <button class="btn btn-secondary" onclick="logout()" style="margin-top: 10px; padding: 8px 15px;">
+                    🚪 Sair
+                </button>
             </div>
 
+            <!-- Sistema de Créditos -->
+            <div id="creditsDisplay">
+                <div class="credits-badge" id="creditsBadge">
+                    🎁 <span id="creditsCount">1</span> Vídeo Gratuito Hoje
+                </div>
+                <div class="timer" id="nextCreditTimer">
+                    ⏰ Próximo crédito em: <span id="timerDisplay">24:00:00</span>
+                </div>
+            </div>
+
+            <div id="noCreditsMessage" class="info-message hidden">
+                <strong>⏳ Créditos Esgotados por Hoje!</strong><br>
+                Volte amanhã para processar mais 1 vídeo grátis.<br>
+                <em>Próximo crédito em: <span id="nextCreditTime"></span></em>
+            </div>
+
+            <!-- Formulário de Processamento -->
             <div class="form-group">
-                <label for="videoUrl">URL do YouTube:</label>
+                <label for="videoUrl">📹 URL do YouTube:</label>
                 <input type="url" id="videoUrl" placeholder="https://youtube.com/watch?v=..." required>
             </div>
 
             <div class="form-group">
-                <label for="observations">Observações (opcional):</label>
+                <label for="observations">📝 Observações (opcional):</label>
                 <textarea id="observations" placeholder="Alguma parte específica que quer destacar?"></textarea>
             </div>
 
-            <button class="btn" onclick="processVideo()">👉 Criar TikTok Automático</button>
-            
-            <!-- Área de Progresso -->
-            <div id="progressContainer" class="progress-container hidden">
-                <h3>🎬 Processando seu vídeo...</h3>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
-                <div class="progress-text" id="progressText">Iniciando processamento...</div>
-                <div class="progress-text" id="jobIdText"></div>
-                
-                <div class="job-info">
-                    <strong>Status:</strong> <span id="statusText">Carregando...</span><br>
-                    <strong>Progresso:</strong> <span id="progressPercent">0%</span><br>
-                    <strong>Tempo:</strong> <span id="timeElapsed">0s</span>
-                </div>
-            </div>
-            
+            <button class="btn" onclick="processVideo()" id="processButton">
+                🎬 Criar TikTok Automático
+            </button>
+
             <div id="processMessage" class="hidden"></div>
+            <div id="videoResult" class="hidden"></div>
         </div>
     </div>
 
     <script>
-        const API_BASE = window.location.origin;
+        const API_BASE = window.location.origin + '/api';
 
-        // Usuários autorizados para o beta
-        const authorizedUsers = [
-            'amigo1@gmail.com',
-            'amigo2@gmail.com', 
-            'amigo3@gmail.com'
-        ];
+        // Sistema de Créditos
+        let userCredits = {
+            credits: 1,
+            lastReset: new Date().toISOString(),
+            nextReset: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+        };
 
-        let currentJobId = null;
-        let progressInterval = null;
-        let startTime = null;
+        // Navegação entre telas
+        function showWelcomeScreen() {
+            hideAllScreens();
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+        }
 
-        async function login() {
-            const email = document.getElementById('email').value.toLowerCase().trim();
-            const messageDiv = document.getElementById('loginMessage');
-            
-            if (!email) {
-                showMessage(messageDiv, 'Por favor, insira um email.', 'error');
-                return;
+        function showRegisterForm() {
+            hideAllScreens();
+            document.getElementById('registerForm').classList.remove('hidden');
+        }
+
+        function showLoginForm() {
+            hideAllScreens();
+            document.getElementById('loginForm').classList.remove('hidden');
+        }
+
+        function showDashboard() {
+            hideAllScreens();
+            document.getElementById('dashboard').classList.remove('hidden');
+            updateCreditsDisplay();
+            startTimer();
+        }
+
+        function hideAllScreens() {
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
+        }
+
+        // Sistema de Timer para próximo crédito
+        function startTimer() {
+            updateTimerDisplay();
+            setInterval(updateTimerDisplay, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const now = new Date();
+            const nextReset = new Date(userCredits.nextReset);
+            const diff = nextReset - now;
+
+            if (diff <= 0) {
+                // Reset dos créditos
+                userCredits.credits = 1;
+                userCredits.lastReset = new Date().toISOString();
+                userCredits.nextReset = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+                updateCreditsDisplay();
             }
 
-            if (authorizedUsers.includes(email)) {
-                localStorage.setItem('userEmail', email);
-                showDashboard();
-                showMessage(messageDiv, '✅ Acesso liberado! Bem-vindo ao beta.', 'success');
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById('timerDisplay').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            document.getElementById('nextCreditTime').textContent = 
+                `${hours}h ${minutes}m ${seconds}s`;
+        }
+
+        // Atualiza display de créditos
+        function updateCreditsDisplay() {
+            const creditsBadge = document.getElementById('creditsBadge');
+            const creditsCount = document.getElementById('creditsCount');
+            const noCreditsMessage = document.getElementById('noCreditsMessage');
+            const processButton = document.getElementById('processButton');
+
+            creditsCount.textContent = userCredits.credits;
+
+            if (userCredits.credits > 0) {
+                creditsBadge.className = 'credits-badge';
+                creditsBadge.innerHTML = `🎁 <span id="creditsCount">${userCredits.credits}</span> Vídeo Gratuito Hoje`;
+                noCreditsMessage.classList.add('hidden');
+                processButton.disabled = false;
+                processButton.textContent = '🎬 Criar TikTok Automático';
             } else {
-                showMessage(messageDiv, '❌ Email não autorizado. Beta fechado para convidados.', 'error');
+                creditsBadge.className = 'credits-badge credits-zero';
+                creditsBadge.innerHTML = `⏳ <span id="creditsCount">0</span> Créditos Hoje`;
+                noCreditsMessage.classList.remove('hidden');
+                processButton.disabled = true;
+                processButton.textContent = '⏳ Aguarde Novo Crédito';
             }
         }
 
+        // Validação de senha em tempo real
+        document.getElementById('password').addEventListener('input', function(e) {
+            const password = e.target.value;
+            const strengthFill = document.getElementById('passwordStrength');
+            let strength = 0;
+            
+            if (password.length >= 6) strength += 25;
+            if (password.length >= 8) strength += 25;
+            if (/[A-Z]/.test(password)) strength += 25;
+            if (/[0-9]/.test(password)) strength += 25;
+            
+            strengthFill.style.width = strength + '%';
+            
+            if (strength < 50) {
+                strengthFill.style.background = '#ff6b6b';
+            } else if (strength < 75) {
+                strengthFill.style.background = '#ffa726';
+            } else {
+                strengthFill.style.background = '#4caf50';
+            }
+        });
+
+        // Cadastro de usuário
+        async function registerUser() {
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('registerEmail').value.toLowerCase().trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const acceptTerms = document.getElementById('acceptTerms').checked;
+            
+            const messageDiv = document.getElementById('registerMessage');
+            const btn = document.querySelector('#registerForm .btn');
+
+            // Validações
+            if (!fullName || !email || !password || !confirmPassword) {
+                showMessage(messageDiv, 'Por favor, preencha todos os campos.', 'error');
+                return;
+            }
+
+            if (!acceptTerms) {
+                showMessage(messageDiv, 'Você deve aceitar os termos de uso.', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showMessage(messageDiv, 'A senha deve ter no mínimo 6 caracteres.', 'error');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showMessage(messageDiv, 'As senhas não coincidem.', 'error');
+                return;
+            }
+
+            if (!validateEmail(email)) {
+                showMessage(messageDiv, 'Por favor, insira um email válido.', 'error');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = '⏳ Criando conta...';
+            
+            showMessage(messageDiv, 'Criando sua conta...', 'info');
+
+            try {
+                // Simulação de cadastro bem-sucedido
+                setTimeout(() => {
+                    // Salva usuário no localStorage (simulação)
+                    const userData = {
+                        email: email,
+                        name: fullName,
+                        credits: 1,
+                        lastReset: new Date().toISOString(),
+                        nextReset: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+                    };
+                    
+                    localStorage.setItem('userData', JSON.stringify(userData));
+                    localStorage.setItem('userEmail', email);
+                    
+                    userCredits = userData;
+                    showDashboard();
+                    
+                    showMessage(messageDiv, '✅ Conta criada com sucesso!', 'success');
+                    
+                }, 1500);
+
+            } catch (error) {
+                showMessage(messageDiv, 'Erro ao criar conta. Tente novamente.', 'error');
+                btn.disabled = false;
+                btn.textContent = '🎉 Criar Minha Conta';
+            }
+        }
+
+        // Login de usuário
+        async function loginUser() {
+            const email = document.getElementById('loginEmail').value.toLowerCase().trim();
+            const password = document.getElementById('loginPassword').value;
+            const messageDiv = document.getElementById('loginMessage');
+            const btn = document.querySelector('#loginForm .btn');
+
+            if (!email || !password) {
+                showMessage(messageDiv, 'Por favor, preencha todos os campos.', 'error');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = '⏳ Entrando...';
+
+            try {
+                // Simulação de login
+                setTimeout(() => {
+                    // Verifica se é um usuário "existente" (simulação)
+                    const savedUser = localStorage.getItem('userData');
+                    
+                    if (savedUser) {
+                        const userData = JSON.parse(savedUser);
+                        if (userData.email === email && password.length >= 6) {
+                            userCredits = userData;
+                            localStorage.setItem('userEmail', email);
+                            showDashboard();
+                            showMessage(messageDiv, '✅ Login realizado com sucesso!', 'success');
+                        } else {
+                            showMessage(messageDiv, '❌ Email ou senha incorretos.', 'error');
+                        }
+                    } else {
+                        // Novo usuário - cria automaticamente
+                        const newUser = {
+                            email: email,
+                            name: email.split('@')[0],
+                            credits: 1,
+                            lastReset: new Date().toISOString(),
+                            nextReset: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+                        };
+                        
+                        localStorage.setItem('userData', JSON.stringify(newUser));
+                        localStorage.setItem('userEmail', email);
+                        userCredits = newUser;
+                        showDashboard();
+                        showMessage(messageDiv, '✅ Nova conta criada automaticamente!', 'success');
+                    }
+                    
+                    btn.disabled = false;
+                    btn.textContent = '🚀 Entrar na Minha Conta';
+                    
+                }, 1000);
+
+            } catch (error) {
+                showMessage(messageDiv, '❌ Erro de conexão.', 'error');
+                btn.disabled = false;
+                btn.textContent = '🚀 Entrar na Minha Conta';
+            }
+        }
+
+        // Processamento de vídeo
         async function processVideo() {
             const url = document.getElementById('videoUrl').value.trim();
             const observations = document.getElementById('observations').value.trim();
-            const userEmail = localStorage.getItem('userEmail');
             const messageDiv = document.getElementById('processMessage');
-            const btn = document.querySelector('#dashboard .btn');
-            const progressContainer = document.getElementById('progressContainer');
+            const resultDiv = document.getElementById('videoResult');
+            const btn = document.getElementById('processButton');
 
             if (!url) {
                 showMessage(messageDiv, 'Por favor, insira uma URL do YouTube.', 'error');
                 return;
             }
 
-            if (!userEmail) {
-                showMessage(messageDiv, 'Sessão expirada. Faça login novamente.', 'error');
+            if (userCredits.credits <= 0) {
+                showMessage(messageDiv, '⏳ Seus créditos diários acabaram. Volte amanhã!', 'error');
                 return;
             }
 
-            // Limpar estado anterior
-            resetProgress();
-            messageDiv.classList.add('hidden');
+            // Limpar resultados anteriores
+            resultDiv.innerHTML = '';
+            resultDiv.classList.add('hidden');
 
-            // Mostrar área de progresso
-            progressContainer.classList.remove('hidden');
+            // Usa 1 crédito
+            userCredits.credits -= 1;
+            updateCreditsDisplay();
+
+            // Processamento
             btn.disabled = true;
-            btn.textContent = '⏳ Processando...';
+            btn.textContent = '⏳ Processando vídeo...';
             
-            updateProgress(0, 'Enviando vídeo para processamento...');
+            showMessage(messageDiv, '🎬 Processando seu TikTok... Isso pode levar alguns minutos.', 'info');
 
             try {
-                // Chamar API REAL para processar vídeo
-                const response = await fetch(API_BASE + '/api/process-video', {
+                // TODO: Substituir por API real
+                const response = await fetch(API_BASE + '/process-video', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        email: userEmail,
-                        videoUrl: url,
+                        email: localStorage.getItem('userEmail'),
+                        video_url: url,
                         observations: observations
                     })
                 });
@@ -328,153 +671,47 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    currentJobId = data.jobId;
-                    startTime = new Date();
+                    showMessage(messageDiv, `✅ ${data.mensagem}`, 'success');
                     
-                    updateProgress(10, 'Vídeo recebido. Iniciando processamento...');
-                    document.getElementById('jobIdText').textContent = `ID: ${data.jobId}`;
-                    
-                    // Iniciar verificação de progresso
-                    startProgressChecking();
-                    
+                    // Mostrar resultado do vídeo
+                    resultDiv.innerHTML = `
+                        <div class="video-result">
+                            <h3>🎉 TikTok Criado com Sucesso!</h3>
+                            <p><strong>Status:</strong> ${data.status}</p>
+                            <p><strong>ID do Vídeo:</strong> ${data.video_id}</p>
+                            <p><strong>Créditos restantes hoje:</strong> ${userCredits.credits}</p>
+                            <p><em>Volte amanhã para mais 1 vídeo grátis!</em></p>
+                        </div>
+                    `;
+                    resultDiv.classList.remove('hidden');
                 } else {
                     showMessage(messageDiv, `❌ Erro: ${data.error}`, 'error');
-                    resetProgress();
+                    // Devolve o crédito em caso de erro
+                    userCredits.credits += 1;
+                    updateCreditsDisplay();
                 }
             } catch (error) {
                 showMessage(messageDiv, '❌ Erro de conexão com o servidor.', 'error');
-                resetProgress();
+                // Devolve o crédito em caso de erro
+                userCredits.credits += 1;
+                updateCreditsDisplay();
+            } finally {
+                btn.disabled = userCredits.credits <= 0;
+                btn.textContent = userCredits.credits > 0 ? '🎬 Criar TikTok Automático' : '⏳ Aguarde Novo Crédito';
             }
         }
 
-        function startProgressChecking() {
-            // Verificar progresso a cada 3 segundos
-            progressInterval = setInterval(checkProgress, 3000);
-        }
-
-        async function checkProgress() {
-            if (!currentJobId) return;
-
-            try {
-                const response = await fetch(API_BASE + '/api/status/' + currentJobId);
-                const job = await response.json();
-
-                if (response.ok) {
-                    updateProgressUI(job);
-                    
-                    // Se terminou, parar de verificar
-                    if (job.status === 'completed' || job.status === 'failed') {
-                        clearInterval(progressInterval);
-                        onProcessingComplete(job);
-                    }
-                }
-            } catch (error) {
-                console.error('Erro ao verificar progresso:', error);
-            }
-        }
-
-        function updateProgressUI(job) {
-            const progress = job.progress || 0;
-            const status = job.status || 'pending';
-            const message = getStatusMessage(status, progress);
-            
-            updateProgress(progress, message);
-            document.getElementById('statusText').textContent = getStatusText(status);
-            document.getElementById('progressPercent').textContent = progress + '%';
-            
-            // Atualizar tempo decorrido
-            if (startTime) {
-                const elapsed = Math.floor((new Date() - startTime) / 1000);
-                document.getElementById('timeElapsed').textContent = elapsed + 's';
-            }
-        }
-
-        function getStatusMessage(status, progress) {
-            const messages = {
-                'pending': 'Na fila de processamento...',
-                'processing': `Processando... ${progress}%`,
-                'downloading': 'Baixando vídeo do YouTube...',
-                'transcribing': 'Transcrevendo áudio...',
-                'analyzing': 'Analisando conteúdo...',
-                'clipping': 'Cortando trechos...',
-                'completed': 'Processamento concluído!',
-                'failed': 'Erro no processamento'
-            };
-            
-            return messages[status] || `Processando... ${progress}%`;
-        }
-
-        function getStatusText(status) {
-            const statusTexts = {
-                'pending': '⏳ Na fila',
-                'processing': '🔄 Processando',
-                'downloading': '📥 Baixando',
-                'transcribing': '🎙️ Transcrevendo',
-                'analyzing': '🔍 Analisando',
-                'clipping': '✂️ Cortando',
-                'completed': '✅ Concluído',
-                'failed': '❌ Falhou'
-            };
-            
-            return statusTexts[status] || status;
-        }
-
-        function onProcessingComplete(job) {
-            const btn = document.querySelector('#dashboard .btn');
-            const messageDiv = document.getElementById('processMessage');
-            
-            btn.disabled = false;
-            btn.textContent = '👉 Criar TikTok Automático';
-            
-            if (job.status === 'completed') {
-                showMessage(messageDiv, '🎉 Processamento concluído! Em breve: download dos vídeos!', 'success');
-                updateProgress(100, 'Processamento concluído com sucesso!');
-            } else {
-                showMessage(messageDiv, '❌ Erro no processamento do vídeo.', 'error');
-            }
-        }
-
-        function updateProgress(percent, message) {
-            document.getElementById('progressFill').style.width = percent + '%';
-            document.getElementById('progressText').textContent = message;
-        }
-
-        function resetProgress() {
-            const btn = document.querySelector('#dashboard .btn');
-            const progressContainer = document.getElementById('progressContainer');
-            
-            if (progressInterval) {
-                clearInterval(progressInterval);
-                progressInterval = null;
-            }
-            
-            currentJobId = null;
-            startTime = null;
-            
-            btn.disabled = false;
-            btn.textContent = '👉 Criar TikTok Automático';
-            progressContainer.classList.add('hidden');
-            
-            updateProgress(0, '');
-            document.getElementById('jobIdText').textContent = '';
-            document.getElementById('statusText').textContent = '';
-            document.getElementById('progressPercent').textContent = '';
-            document.getElementById('timeElapsed').textContent = '';
-        }
-
-        function showDashboard() {
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('dashboard').classList.remove('hidden');
-            document.getElementById('userEmail').textContent = localStorage.getItem('userEmail');
-            resetProgress();
-        }
-
+        // Logout
         function logout() {
             localStorage.removeItem('userEmail');
-            document.getElementById('dashboard').classList.add('hidden');
-            document.getElementById('loginScreen').classList.remove('hidden');
-            document.getElementById('email').value = '';
-            resetProgress();
+            // Mantém os dados do usuário para próximo login
+            showWelcomeScreen();
+        }
+
+        // Funções auxiliares
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
         }
 
         function showMessage(element, message, type) {
@@ -483,10 +720,34 @@
             element.classList.remove('hidden');
         }
 
+        function showTerms() {
+            alert('📋 Termos de Uso:\n\n• 1 vídeo grátis por dia\n• Não acumulativo\n• Uso pessoal\n• Respeito aos direitos autorais\n• Podemos modificar as regras a qualquer momento');
+        }
+
+        function showPrivacy() {
+            alert('🔒 Política de Privacidade:\n\n• Seus dados estão seguros\n• Não compartilhamos informações\n• Usamos cookies para melhor experiência\n• Você pode excluir sua conta a qualquer momento');
+        }
+
         // Verifica se usuário já está logado
         window.onload = function() {
             const userEmail = localStorage.getItem('userEmail');
-            if (userEmail && authorizedUsers.includes(userEmail)) {
+            const userData = localStorage.getItem('userData');
+            
+            if (userEmail && userData) {
+                userCredits = JSON.parse(userData);
+                
+                // Verifica se precisa resetar créditos
+                const now = new Date();
+                const lastReset = new Date(userCredits.lastReset);
+                
+                if (now.toDateString() !== lastReset.toDateString()) {
+                    userCredits.credits = 1;
+                    userCredits.lastReset = now.toISOString();
+                    userCredits.nextReset = new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString();
+                    localStorage.setItem('userData', JSON.stringify(userCredits));
+                }
+                
+                document.getElementById('userEmail').textContent = userEmail;
                 showDashboard();
             }
         }
