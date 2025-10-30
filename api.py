@@ -4,6 +4,9 @@ import os
 import requests
 import time
 import random
+import subprocess
+import uuid
+from datetime import datetime
 
 app = Flask(__name__)
 CORS(app)  # Permite frontend se conectar
@@ -15,25 +18,118 @@ AUTHORIZED_USERS = [
     'amigo3@gmail.com'
 ]
 
-# Simula processamento de vídeo (depois substituímos pelo seu código real)
-def simular_processamento_video(url, email):
-    """Simula o processamento do vídeo - DEPOIS SUBSTITUÍMOS PELO SEU CÓDIGO REAL"""
+# ==================== PROCESSAMENTO REAL DE VÍDEO ====================
+def processar_video_real(url, email):
+    """Processa vídeos do YouTube DE VERDADE - versão simplificada"""
     
-    # Gera um ID único para o vídeo
-    video_id = f"video_{int(time.time())}_{random.randint(1000, 9999)}"
-    
-    # Simula tempo de processamento (2-5 segundos)
-    tempo_processamento = random.randint(2, 5)
-    time.sleep(tempo_processamento)
-    
-    # Simula resultado (DEPOIS SERÁ O VÍDEO REAL)
-    return {
-        'status': 'sucesso',
-        'video_id': video_id,
-        'url_download': f'https://exemplo.com/download/{video_id}.mp4',
-        'mensagem': 'Vídeo processado com sucesso! Em breve teremos processamento real.',
-        'tempo_processamento': tempo_processamento
-    }
+    try:
+        # Gera um ID único para o vídeo
+        video_id = f"video_{int(datetime.now().timestamp())}_{uuid.uuid4().hex[:8]}"
+        
+        print(f"🎬 Iniciando processamento para {email}")
+        print(f"📹 URL: {url}")
+        
+        # Cria pasta temporária (no Vercel é /tmp)
+        temp_dir = "/tmp"
+        os.makedirs(temp_dir, exist_ok=True)
+        
+        # Nome dos arquivos
+        video_file = os.path.join(temp_dir, f"{video_id}_original.mp4")
+        output_file = os.path.join(temp_dir, f"{video_id}_final.mp4")
+        
+        # PASSO 1: Baixar vídeo do YouTube (versão simplificada)
+        print("📥 Baixando vídeo do YouTube...")
+        
+        # Comando para baixar (versão básica)
+        cmd_download = [
+            'yt-dlp',
+            '-f', 'best[height<=720]',  # Qualidade limitada para ser mais rápido
+            '-o', video_file,
+            url
+        ]
+        
+        try:
+            result = subprocess.run(cmd_download, capture_output=True, text=True, timeout=120)
+            if result.returncode != 0:
+                return {
+                    'status': 'erro',
+                    'video_id': video_id,
+                    'mensagem': 'Erro ao baixar vídeo do YouTube',
+                    'debug': result.stderr[:200]  # Mostra só os primeiros 200 caracteres do erro
+                }
+        except subprocess.TimeoutExpired:
+            return {
+                'status': 'erro', 
+                'video_id': video_id,
+                'mensagem': 'Tempo esgotado ao baixar vídeo (2 minutos)'
+            }
+        
+        # Verifica se o arquivo foi baixado
+        if not os.path.exists(video_file):
+            return {
+                'status': 'erro',
+                'video_id': video_id,
+                'mensagem': 'Vídeo não foi baixado corretamente'
+            }
+        
+        # PASSO 2: Processar vídeo (versão ultra-simplificada)
+        print("🎪 Processando vídeo...")
+        
+        # Comando básico de processamento - vertical 9:16
+        cmd_process = [
+            'ffmpeg',
+            '-i', video_file,
+            '-t', '60',  # Limita para 60 segundos
+            '-vf', 'scale=608:1080:force_original_aspect_ratio=decrease,pad=608:1080:(ow-iw)/2:(oh-ih)/2:black',
+            '-c:a', 'aac',
+            '-b:a', '128k',
+            '-y',  # Sobrescrever se existir
+            output_file
+        ]
+        
+        try:
+            result = subprocess.run(cmd_process, capture_output=True, text=True, timeout=180)
+            if result.returncode != 0:
+                return {
+                    'status': 'erro',
+                    'video_id': video_id, 
+                    'mensagem': 'Erro ao processar vídeo',
+                    'debug': result.stderr[:200]
+                }
+        except subprocess.TimeoutExpired:
+            return {
+                'status': 'erro',
+                'video_id': video_id,
+                'mensagem': 'Tempo esgotado ao processar vídeo (3 minutos)'
+            }
+        
+        # Verifica se o arquivo foi criado
+        if os.path.exists(output_file):
+            file_size = os.path.getsize(output_file) / (1024 * 1024)  # Tamanho em MB
+            
+            return {
+                'status': 'sucesso',
+                'video_id': video_id,
+                'url_download': f'/api/download/{video_id}',
+                'mensagem': f'✅ TikTok criado com sucesso! Tamanho: {file_size:.1f}MB',
+                'tamanho_arquivo': f'{file_size:.1f}MB',
+                'duracao': '60 segundos',
+                'formato': 'Vertical 9:16'
+            }
+        else:
+            return {
+                'status': 'erro',
+                'video_id': video_id,
+                'mensagem': 'Arquivo final não foi criado'
+            }
+            
+    except Exception as e:
+        print(f"❌ Erro geral: {str(e)}")
+        return {
+            'status': 'erro',
+            'video_id': video_id if 'video_id' in locals() else 'unknown',
+            'mensagem': f'Erro inesperado: {str(e)}'
+        }
 
 # Rota de saúde da API
 @app.route('/api/health', methods=['GET'])
@@ -70,8 +166,8 @@ def process_video():
         
         print(f"📥 Processando vídeo para {email}: {video_url}")
         
-        # Simula processamento (DEPOIS SUBSTITUÍMOS PELO SEU CÓDIGO)
-        resultado = simular_processamento_video(video_url, email)
+        # Processamento REAL do vídeo
+        resultado = processar_video_real(video_url, email)
         
         return jsonify(resultado)
         
@@ -87,6 +183,15 @@ def listar_videos(email):
     
     # Por enquanto retorna lista vazia (depois puxa do banco)
     return jsonify({'videos': [], 'message': 'Em breve: histórico de vídeos'})
+
+# Rota para download (simulada por enquanto)
+@app.route('/api/download/<video_id>', methods=['GET'])
+def download_video(video_id):
+    return jsonify({
+        'status': 'em_desenvolvimento',
+        'message': 'Download em desenvolvimento',
+        'video_id': video_id
+    })
 
 # Rota para servir o frontend
 @app.route('/')
