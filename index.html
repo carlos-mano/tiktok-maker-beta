@@ -72,6 +72,16 @@
             color: #666;
         }
 
+        .expiration-timer {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-size: 0.9rem;
+            color: #856404;
+        }
+
         .form-group {
             margin-bottom: 20px;
             text-align: left;
@@ -131,6 +141,14 @@
             background: #6c757d;
         }
 
+        .btn-success {
+            background: linear-gradient(135deg, #4caf50, #45a049);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffa726, #fb8c00);
+        }
+
         .hidden {
             display: none;
         }
@@ -158,6 +176,15 @@
             border-radius: 10px;
             margin-top: 20px;
             text-align: left;
+        }
+
+        .warning-message {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 1px solid #ffeaa7;
         }
 
         .login-link {
@@ -220,6 +247,51 @@
             margin-bottom: 20px;
             text-align: left;
         }
+
+        .download-section {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .video-list {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .video-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .video-item.expiring {
+            border-left-color: #ffa726;
+            background: #fff3cd;
+        }
+
+        .video-item.expired {
+            border-left-color: #ff6b6b;
+            background: #f8d7da;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #e1e5e9;
+            border-radius: 3px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #4caf50, #45a049);
+            transition: width 0.3s;
+        }
     </style>
 </head>
 <body>
@@ -234,8 +306,8 @@
                 <strong>🎯 1 Vídeo Gratuito por Dia!</strong><br>
                 • Cadastre-se e comece a usar agora<br>
                 • 1 crédito = 1 TikTok automático<br>
-                • Novo crédito a cada 24 horas<br>
-                • Não acumulativo - usa ou perde!
+                • Downloads expiram em 24 horas<br>
+                • Novo crédito a cada 24 horas
             </div>
 
             <button class="btn" onclick="showRegisterForm()">
@@ -331,12 +403,17 @@
             <div class="logo">🎬</div>
             <h1>Pronto para Criar!</h1>
             
-            <!-- Informações do Usuário e Créditos -->
+            <!-- Informações do Usuário -->
             <div class="user-info">
                 <strong>👤 Usuário:</strong> <span id="userEmail"></span>
-                <button class="btn btn-secondary" onclick="logout()" style="margin-top: 10px; padding: 8px 15px;">
-                    🚪 Sair
-                </button>
+                <div style="margin-top: 10px;">
+                    <button class="btn btn-success" onclick="loadMyVideos()" style="padding: 8px 15px; margin-right: 10px;">
+                        📁 Meus Vídeos
+                    </button>
+                    <button class="btn btn-secondary" onclick="logout()" style="padding: 8px 15px;">
+                        🚪 Sair
+                    </button>
+                </div>
             </div>
 
             <!-- Sistema de Créditos -->
@@ -372,6 +449,16 @@
 
             <div id="processMessage" class="hidden"></div>
             <div id="videoResult" class="hidden"></div>
+            <div id="downloadSection" class="download-section hidden"></div>
+            
+            <!-- Lista de Vídeos do Usuário -->
+            <div id="myVideosSection" class="video-list hidden">
+                <h3 style="margin-bottom: 15px;">📁 Meus Vídeos Ativos</h3>
+                <div id="videosList"></div>
+                <button class="btn btn-secondary" onclick="hideMyVideos()" style="margin-top: 15px;">
+                    ↩️ Voltar
+                </button>
+            </div>
         </div>
     </div>
 
@@ -404,6 +491,7 @@
         function showDashboard() {
             hideAllScreens();
             document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('myVideosSection').classList.add('hidden');
             updateCreditsDisplay();
             startTimer();
         }
@@ -628,6 +716,7 @@
             const observations = document.getElementById('observations').value.trim();
             const messageDiv = document.getElementById('processMessage');
             const resultDiv = document.getElementById('videoResult');
+            const downloadSection = document.getElementById('downloadSection');
             const btn = document.getElementById('processButton');
 
             if (!url) {
@@ -643,6 +732,8 @@
             // Limpar resultados anteriores
             resultDiv.innerHTML = '';
             resultDiv.classList.add('hidden');
+            downloadSection.innerHTML = '';
+            downloadSection.classList.add('hidden');
 
             // Usa 1 crédito
             userCredits.credits -= 1;
@@ -655,7 +746,6 @@
             showMessage(messageDiv, '🎬 Processando seu TikTok... Isso pode levar alguns minutos.', 'info');
 
             try {
-                // TODO: Substituir por API real
                 const response = await fetch(API_BASE + '/process-video', {
                     method: 'POST',
                     headers: {
@@ -671,19 +761,44 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    showMessage(messageDiv, `✅ ${data.mensagem}`, 'success');
-                    
-                    // Mostrar resultado do vídeo
-                    resultDiv.innerHTML = `
-                        <div class="video-result">
+                    if (data.status === 'sucesso') {
+                        showMessage(messageDiv, `✅ ${data.mensagem}`, 'success');
+                        
+                        // Mostrar resultado do vídeo
+                        resultDiv.innerHTML = `
                             <h3>🎉 TikTok Criado com Sucesso!</h3>
                             <p><strong>Status:</strong> ${data.status}</p>
+                            <p><strong>Título:</strong> ${data.titulo}</p>
                             <p><strong>ID do Vídeo:</strong> ${data.video_id}</p>
+                            <p><strong>Tamanho:</strong> ${data.tamanho_arquivo}</p>
+                            <p><strong>Duração:</strong> ${data.duracao}</p>
+                            <p><strong>Formato:</strong> ${data.formato}</p>
                             <p><strong>Créditos restantes hoje:</strong> ${userCredits.credits}</p>
-                            <p><em>Volte amanhã para mais 1 vídeo grátis!</em></p>
-                        </div>
-                    `;
-                    resultDiv.classList.remove('hidden');
+                            <div class="expiration-timer">
+                                ⏰ <strong>Download disponível por:</strong> ${data.expiracao}
+                            </div>
+                        `;
+                        resultDiv.classList.remove('hidden');
+                        
+                        // Mostrar seção de download
+                        downloadSection.innerHTML = `
+                            <h3>📥 Download Disponível!</h3>
+                            <p>Seu TikTok está pronto para baixar. Expira em 24 horas.</p>
+                            <button class="btn btn-success" onclick="downloadVideo('${data.video_id}')">
+                                ⬇️ Baixar TikTok Agora
+                            </button>
+                            <p style="margin-top: 10px; font-size: 0.9rem; color: #666;">
+                                <em>⚠️ Lembre-se: O download expira em 24 horas</em>
+                            </p>
+                        `;
+                        downloadSection.classList.remove('hidden');
+                        
+                    } else {
+                        showMessage(messageDiv, `❌ Erro: ${data.mensagem}`, 'error');
+                        // Devolve o crédito em caso de erro
+                        userCredits.credits += 1;
+                        updateCreditsDisplay();
+                    }
                 } else {
                     showMessage(messageDiv, `❌ Erro: ${data.error}`, 'error');
                     // Devolve o crédito em caso de erro
@@ -699,6 +814,79 @@
                 btn.disabled = userCredits.credits <= 0;
                 btn.textContent = userCredits.credits > 0 ? '🎬 Criar TikTok Automático' : '⏳ Aguarde Novo Crédito';
             }
+        }
+
+        // Download de vídeo
+        async function downloadVideo(videoId) {
+            try {
+                // Abre em nova aba para download
+                window.open(`${API_BASE}/download/${videoId}`, '_blank');
+                
+                // Mostra mensagem de sucesso
+                const downloadSection = document.getElementById('downloadSection');
+                const existingContent = downloadSection.innerHTML;
+                downloadSection.innerHTML = existingContent + 
+                    '<div class="success-message" style="margin-top: 10px;">✅ Download iniciado! Verifique sua pasta de downloads.</div>';
+                    
+            } catch (error) {
+                alert('❌ Erro ao iniciar download. Tente novamente.');
+            }
+        }
+
+        // Carregar vídeos do usuário
+        async function loadMyVideos() {
+            const email = localStorage.getItem('userEmail');
+            const videosList = document.getElementById('videosList');
+            const myVideosSection = document.getElementById('myVideosSection');
+            
+            try {
+                const response = await fetch(`${API_BASE}/videos/${email}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    if (data.videos.length > 0) {
+                        videosList.innerHTML = data.videos.map(video => `
+                            <div class="video-item ${video.tempo_restante && video.tempo_restante.includes('0h') ? 'expiring' : ''}">
+                                <strong>${video.titulo}</strong>
+                                <p>📦 ${video.tamanho} • ⏱️ ${video.duracao}</p>
+                                <p>🆔 ${video.id}</p>
+                                <p>⏰ Expira em: ${video.tempo_restante}</p>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${calculateProgress(video.tempo_restante)}%"></div>
+                                </div>
+                                <button class="btn btn-success" onclick="downloadVideo('${video.id}')" style="padding: 8px 15px; margin-top: 5px;">
+                                    ⬇️ Baixar
+                                </button>
+                            </div>
+                        `).join('');
+                    } else {
+                        videosList.innerHTML = '<div class="info-message">Nenhum vídeo ativo encontrado.</div>';
+                    }
+                    
+                    // Mostra a seção
+                    document.getElementById('dashboard').classList.add('hidden');
+                    myVideosSection.classList.remove('hidden');
+                    
+                } else {
+                    videosList.innerHTML = '<div class="error-message">Erro ao carregar vídeos.</div>';
+                }
+            } catch (error) {
+                videosList.innerHTML = '<div class="error-message">Erro de conexão.</div>';
+            }
+        }
+
+        function calculateProgress(tempoRestante) {
+            // Calcula progresso baseado no tempo restante (simplificado)
+            if (tempoRestante.includes('0h')) return 10; // Menos de 1 hora
+            if (tempoRestante.includes('1h')) return 30;
+            if (tempoRestante.includes('2h')) return 50;
+            if (tempoRestante.includes('3h')) return 70;
+            return 90;
+        }
+
+        function hideMyVideos() {
+            document.getElementById('myVideosSection').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
         }
 
         // Logout
@@ -721,7 +909,7 @@
         }
 
         function showTerms() {
-            alert('📋 Termos de Uso:\n\n• 1 vídeo grátis por dia\n• Não acumulativo\n• Uso pessoal\n• Respeito aos direitos autorais\n• Podemos modificar as regras a qualquer momento');
+            alert('📋 Termos de Uso:\n\n• 1 vídeo grátis por dia\n• Downloads expiram em 24 horas\n• Uso pessoal\n• Respeito aos direitos autorais\n• Podemos modificar as regras a qualquer momento');
         }
 
         function showPrivacy() {
